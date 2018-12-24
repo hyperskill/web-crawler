@@ -1,6 +1,8 @@
 package webcrawler;
 
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,13 +76,14 @@ public class WebCrawlerWindow extends JFrame {
 
     var locationPanel = new JPanel();
     locationPanel.setLayout(new BoxLayout(locationPanel, BoxLayout.LINE_AXIS));
-    locationPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    locationPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     locationPanel.add(location);
     locationPanel.add(goButton);
 
     var titlePanel = new JPanel();
-    titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.LINE_AXIS));
-    titlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    titlePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    titlePanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+    titlePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     titlePanel.add(titleLabelInfo);
     titlePanel.add(titleLabel);
 
