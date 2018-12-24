@@ -1,6 +1,5 @@
 package webcrawler;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,10 +10,14 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import webcrawler.crawl.Html;
+import webcrawler.crawl.HtmlPageParser;
 
 public class WebCrawlerWindow extends JFrame {
 
@@ -22,38 +25,48 @@ public class WebCrawlerWindow extends JFrame {
   private final JTextArea textArea;
   private final JTextField location;
   private final JButton goButton;
+  private final JLabel titleLabelInfo;
+  private final JLabel titleLabel;
 
-  public WebCrawlerWindow() {
+  private final HtmlPageParser pageParser;
+
+  public WebCrawlerWindow(HtmlPageParser pageParser) {
+    this.pageParser = pageParser;
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setSize(600, 600);
 
     this.location = new JTextField("http://example.com");
     this.goButton = new JButton("Get text!");
     this.textArea = new JTextArea();
+    this.titleLabelInfo = new JLabel("Title: ");
+    this.titleLabel = new JLabel();
     initLayout();
     initActions();
     setVisible(true);
   }
 
   private void initActions() {
-    goButton.addActionListener(e -> {
-      String url = location.getText();
-      try (
-          InputStream inputStream = new URL(url).openStream();
-          BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))
-      ) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        String nextLine;
-        while ((nextLine = reader.readLine()) != null) {
-          stringBuilder.append(nextLine);
-          stringBuilder.append(LINE_SEPARATOR);
-        }
-        final String siteText = stringBuilder.toString();
-        textArea.setText(siteText);
-      } catch (IOException e1) {
-        e1.printStackTrace();
-      }
-    });
+    goButton.addActionListener(e ->
+        SwingUtilities.invokeLater(() -> {
+          String url = location.getText();
+          try (
+              InputStream inputStream = new URL(url).openStream();
+              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))
+          ) {
+            final StringBuilder stringBuilder = new StringBuilder();
+            String nextLine;
+            while ((nextLine = reader.readLine()) != null) {
+              stringBuilder.append(nextLine);
+              stringBuilder.append(LINE_SEPARATOR);
+            }
+            final String siteText = stringBuilder.toString();
+            Html html = pageParser.parse(siteText);
+            textArea.setText(siteText);
+            titleLabel.setText(html.getTitle());
+          } catch (IOException e1) {
+            textArea.setText("No content");
+          }
+        }));
   }
 
   private void initLayout() {
@@ -65,6 +78,12 @@ public class WebCrawlerWindow extends JFrame {
     locationPanel.add(location);
     locationPanel.add(goButton);
 
+    var titlePanel = new JPanel();
+    titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.LINE_AXIS));
+    titlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    titlePanel.add(titleLabelInfo);
+    titlePanel.add(titleLabel);
+
     var scrollPane = new JScrollPane(textArea);
     scrollPane.setPreferredSize(new Dimension(400, 400));
 
@@ -73,9 +92,11 @@ public class WebCrawlerWindow extends JFrame {
     areaPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     areaPanel.add(scrollPane);
 
-    rootPanel.add(locationPanel, BorderLayout.PAGE_START);
-    rootPanel.add(areaPanel, BorderLayout.CENTER);
+    rootPanel.setLayout(new BoxLayout(rootPanel, BoxLayout.PAGE_AXIS));
+    rootPanel.add(locationPanel);
+    rootPanel.add(titlePanel);
+    rootPanel.add(areaPanel);
 
-
+    pack();
   }
 }
