@@ -14,9 +14,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import webcrawler.crawl.Html;
 import webcrawler.crawl.HtmlPageParser;
 import webcrawler.source.PageSourceReader;
+import webcrawler.workers.PageLoadWorker;
 
 public class WebCrawlerWindow extends JFrame {
 
@@ -56,17 +56,9 @@ public class WebCrawlerWindow extends JFrame {
     goButton.addActionListener(e ->
         SwingUtilities.invokeLater(() -> {
           String url = location.getText();
-          final String siteText = pageReader.readPageSource(url);
-          Html html = pageParser.parse(siteText, url);
-          titleLabel.setText(html.getTitle());
-          for (String link : html.getLinks()) {
-            if (pageReader.isHtml(link)) {
-              final String linkText = pageReader.readPageSource(link);
-              Html htmlLink = pageParser.parse(linkText, link);
-              System.out.println(link + " : " + html.getTitle());
-              model.addRow(new Object[]{link, htmlLink.getTitle()});
-            }
-          }
+          PageLoadWorker pageLoadWorker = new PageLoadWorker(url, titleLabel, model, pageReader,
+              pageParser);
+          pageLoadWorker.execute();
         }));
   }
 

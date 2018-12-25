@@ -15,10 +15,12 @@ public class PageSourceReader {
   public boolean isHtml(String url) {
     try {
       URLConnection urlConnection = new URL(url).openConnection();
-      if (urlConnection.getContentType().equals(TEXT_HTML)) {
+      if (urlConnection.getContentType() != null && urlConnection.getContentType()
+          .contains(TEXT_HTML)) {
         return true;
       }
     } catch (IOException e) {
+      System.out.println("Error " + e);
       return false;
     }
     return false;
@@ -38,7 +40,7 @@ public class PageSourceReader {
       return stringBuilder.toString();
     } catch (
         IOException e1) {
-      System.err.println("Error on parse page " + url);
+      System.out.println("Error on parse page " + url);
       return "";
     }
   }
