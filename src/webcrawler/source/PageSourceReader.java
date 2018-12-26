@@ -9,12 +9,14 @@ import java.net.URLConnection;
 
 public class PageSourceReader {
 
-  public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-  public static final String TEXT_HTML = "text/html";
+  private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+  private static final String TEXT_HTML = "text/html";
+  public static final String USER_AGENT_MOZILLA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0";
 
   public boolean isHtml(String url) {
     try {
       URLConnection urlConnection = new URL(url).openConnection();
+      urlConnection.setRequestProperty("User-Agent", USER_AGENT_MOZILLA);
       if (urlConnection.getContentType() != null && urlConnection.getContentType()
           .contains(TEXT_HTML)) {
         return true;
@@ -27,8 +29,20 @@ public class PageSourceReader {
   }
 
   public String readPageSource(String url) {
+    final URLConnection urlConnection;
+    try {
+      urlConnection = new URL(url).openConnection();
+      urlConnection.setRequestProperty("User-Agent", USER_AGENT_MOZILLA);
+      return readFromConnection(urlConnection);
+    } catch (IOException e) {
+      System.out.println("Error on parse page " + url);
+      return "";
+    }
+  }
+
+  private String readFromConnection(URLConnection urlConnection) {
     try (
-        InputStream inputStream = new URL(url).openStream();
+        InputStream inputStream = urlConnection.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))
     ) {
       final StringBuilder stringBuilder = new StringBuilder();
@@ -38,9 +52,7 @@ public class PageSourceReader {
         stringBuilder.append(LINE_SEPARATOR);
       }
       return stringBuilder.toString();
-    } catch (
-        IOException e1) {
-      System.out.println("Error on parse page " + url);
+    } catch (IOException e) {
       return "";
     }
   }

@@ -1,6 +1,5 @@
 package webcrawler.crawl;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +16,7 @@ public class HtmlPageParser {
 
   public Html parse(String siteText, String rootHost) {
     HtmlBuilder htmlBuilder = new HtmlBuilder();
+
     buildTitle(htmlBuilder, siteText);
     buildLinks(htmlBuilder, siteText, rootHost);
 

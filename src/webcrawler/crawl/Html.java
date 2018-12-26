@@ -7,7 +7,7 @@ public class Html {
   private final String title;
   private final Set<String> links;
 
-  public Html(String title, Set<String> links) {
+  Html(String title, Set<String> links) {
     this.title = title;
     this.links = links;
   }

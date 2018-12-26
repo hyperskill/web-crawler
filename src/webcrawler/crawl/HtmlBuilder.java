@@ -4,11 +4,10 @@ import java.util.Set;
 
 public class HtmlBuilder {
 
-
   private String title;
   private Set<String> links;
 
-  public HtmlBuilder() {
+  HtmlBuilder() {
     title = "no title";
     links = Set.of();
   }

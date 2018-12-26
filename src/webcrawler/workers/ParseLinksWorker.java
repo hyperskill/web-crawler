@@ -1,5 +1,7 @@
 package webcrawler.workers;
 
+import java.util.List;
+import java.util.Vector;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import webcrawler.crawl.Html;
@@ -25,13 +27,18 @@ public class ParseLinksWorker extends SwingWorker<Void, Void> {
 
   @Override
   protected Void doInBackground() throws Exception {
+    Vector<Vector<String>> allData = new Vector<>();
     for (String link : rootPage.getLinks()) {
       if (pageReader.isHtml(link)) {
+        Vector<String> res = new Vector<>();
         final String linkText = pageReader.readPageSource(link);
         Html htmlLink = pageParser.parse(linkText, link);
-        linksTable.addRow(new Object[]{link, htmlLink.getTitle()});
+        res.add(link);
+        res.add(htmlLink.getTitle());
+        allData.add(res);
       }
     }
+    linksTable.setDataVector(allData, new Vector<>(List.of("URL", "Title")));
     return null;
   }
 }
