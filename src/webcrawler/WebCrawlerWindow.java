@@ -22,7 +22,6 @@ import webcrawler.workers.PageLoadWorker;
 
 public class WebCrawlerWindow extends JFrame {
 
-
   private final JTable table;
   private final JTextField location;
   private final JButton goButton;
