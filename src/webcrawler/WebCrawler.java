@@ -33,8 +33,8 @@ public class WebCrawler extends JFrame {
 
         textCont.askUrl.setSize(425, 30);
         add(textCont.askUrl).setLocation(30, 10);
-
-        add(textCont.textArea).setLocation(30,50);
+        add(textCont.title).setLocation(30, 50);
+        add(textCont.textArea).setLocation(30,85);
         setVisible(true);
         setLayout(null);
     }
@@ -43,10 +43,12 @@ public class WebCrawler extends JFrame {
 class InContent extends JFrame {
     JTextField askUrl = new JTextField("Type URL here");
     JTextArea textArea = new JTextArea();
+    JTextArea title = new JTextArea();
     JButton applyButton = new JButton("Start");
 
     InContent(int x, int y){
         textArea.setSize(x, y);
+        title.setSize(540, 30);
     }
 
     void getPageText(String url){
@@ -60,6 +62,8 @@ class InContent extends JFrame {
                 str.append("\n");
             }
             textArea.setText(str.toString());
+            String[] strm = str.toString().split("(</?title>)");
+            title.setText("Title is: " + strm[1]);
         } catch (IOException e) {
             e.printStackTrace();
         }
